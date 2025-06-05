@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "mcp-go-generator-node": {
+      "command": "node",
+      "args": ["/Users/hornosg/MyProjects/saas-mt/mcp/mcp-go-generator-node/src/index.js"],
+      "cwd": "/Users/hornosg/MyProjects/saas-mt",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "mcp-backoffice-integration": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-everything"
+      ],
+      "cwd": "/Users/hornosg/MyProjects/saas-mt"
+    }
+  }
+} 
