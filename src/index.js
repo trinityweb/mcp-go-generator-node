@@ -13,6 +13,13 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Crear función de logging
+function logToFile(message) {
+  const logPath = '/Users/hornosg/MyProjects/saas-mt/mcp_debug.log';
+  const timestamp = new Date().toISOString();
+  fs.appendFileSync(logPath, `[${timestamp}] ${message}\n`);
+}
+
 class GoGeneratorMCP {
   constructor() {
     this.server = new Server(
@@ -100,6 +107,201 @@ class GoGeneratorMCP {
             required: [],
           },
         },
+        {
+          name: 'analyze_usecase_workflow',
+          description: 'Analizar un caso de uso y generar roadmap completo con todos los componentes necesarios',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              service_path: {
+                type: 'string',
+                description: 'Ruta al servicio (ej: "saas-mt-pim-service")',
+              },
+              module_name: {
+                type: 'string',
+                description: 'Nombre del módulo (ej: "marketplace")',
+              },
+              usecase_description: {
+                type: 'string',
+                description: 'Descripción del caso de uso (ej: "Crear categoría marketplace con validaciones")',
+              },
+              business_rules: {
+                type: 'array',
+                items: { type: 'string' },
+                description: 'Reglas de negocio específicas',
+                default: [],
+              },
+              integration_points: {
+                type: 'array',
+                items: { type: 'string' },
+                description: 'Puntos de integración con otros servicios',
+                default: [],
+              },
+            },
+            required: ['service_path', 'module_name', 'usecase_description'],
+          },
+        },
+        {
+          name: 'generate_workflow_roadmap',
+          description: 'Generar roadmap detallado paso a paso para implementar un flujo completo',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              workflow_type: {
+                type: 'string',
+                enum: ['crud_complete', 'business_flow', 'integration_flow', 'custom'],
+                description: 'Tipo de flujo a implementar',
+              },
+              entity_name: {
+                type: 'string',
+                description: 'Nombre de la entidad principal',
+              },
+              operations: {
+                type: 'array',
+                items: { type: 'string', enum: ['create', 'read', 'update', 'delete', 'list', 'search', 'validate'] },
+                description: 'Operaciones a implementar',
+                default: ['create', 'read', 'update', 'delete', 'list'],
+              },
+              complexity_level: {
+                type: 'string',
+                enum: ['simple', 'medium', 'complex'],
+                description: 'Nivel de complejidad del flujo',
+                default: 'medium',
+              },
+            },
+            required: ['workflow_type', 'entity_name'],
+          },
+        },
+        {
+          name: 'generate_component_by_step',
+          description: 'Generar un componente específico siguiendo el roadmap paso a paso',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              service_path: {
+                type: 'string',
+                description: 'Ruta al servicio',
+              },
+              module_name: {
+                type: 'string',
+                description: 'Nombre del módulo',
+              },
+              component_type: {
+                type: 'string',
+                enum: ['entity', 'port', 'usecase', 'request', 'response', 'repository', 'controller', 'criteria_builder', 'mapper', 'object_mother', 'integration_test'],
+                description: 'Tipo de componente a generar',
+              },
+              entity_name: {
+                type: 'string',
+                description: 'Nombre de la entidad',
+              },
+              operation_name: {
+                type: 'string',
+                description: 'Nombre de la operación (ej: "create", "update")',
+                default: '',
+              },
+              dependencies: {
+                type: 'array',
+                items: { type: 'string' },
+                description: 'Dependencias del componente',
+                default: [],
+              },
+              business_rules: {
+                type: 'array',
+                items: { type: 'string' },
+                description: 'Reglas de negocio específicas',
+                default: [],
+              },
+            },
+            required: ['service_path', 'module_name', 'component_type', 'entity_name'],
+          },
+        },
+        {
+          name: 'generate_integration_scripts',
+          description: 'Generar scripts de integración (curl, postman, tests E2E) para un flujo completo',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              service_path: {
+                type: 'string',
+                description: 'Ruta al servicio',
+              },
+              module_name: {
+                type: 'string',
+                description: 'Nombre del módulo',
+              },
+              entity_name: {
+                type: 'string',
+                description: 'Nombre de la entidad',
+              },
+              endpoints: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    method: { type: 'string' },
+                    path: { type: 'string' },
+                    description: { type: 'string' },
+                    requires_auth: { type: 'boolean', default: true },
+                    requires_tenant: { type: 'boolean', default: true },
+                  },
+                },
+                description: 'Endpoints a testear',
+                default: [],
+              },
+              test_scenarios: {
+                type: 'array',
+                items: { type: 'string' },
+                description: 'Escenarios de prueba específicos',
+                default: ['happy_path', 'validation_errors', 'not_found', 'unauthorized'],
+              },
+            },
+            required: ['service_path', 'module_name', 'entity_name'],
+          },
+        },
+        {
+          name: 'update_project_tracking',
+          description: 'Actualizar documentación de tracking del proyecto con progreso de implementación',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              tracking_file: {
+                type: 'string',
+                description: 'Ruta al archivo de tracking',
+                default: 'documentation/PROJECT_TRACKING.md',
+              },
+              completed_tasks: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    task_name: { type: 'string' },
+                    component_type: { type: 'string' },
+                    completion_date: { type: 'string' },
+                    notes: { type: 'string' },
+                  },
+                },
+                description: 'Tareas completadas a marcar',
+                default: [],
+              },
+              new_tasks: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    task_name: { type: 'string' },
+                    description: { type: 'string' },
+                    priority: { type: 'string', enum: ['high', 'medium', 'low'] },
+                    estimated_time: { type: 'string' },
+                  },
+                },
+                description: 'Nuevas tareas a agregar',
+                default: [],
+              },
+            },
+            required: ['tracking_file'],
+          },
+        },
       ],
     }));
 
@@ -114,6 +316,16 @@ class GoGeneratorMCP {
             return await this.createGoService(args);
           case 'show_project_status':
             return await this.showProjectStatus(args);
+          case 'analyze_usecase_workflow':
+            return await this.analyzeUsecaseWorkflow(args);
+          case 'generate_workflow_roadmap':
+            return await this.generateWorkflowRoadmap(args);
+          case 'generate_component_by_step':
+            return await this.generateComponentByStep(args);
+          case 'generate_integration_scripts':
+            return await this.generateIntegrationScripts(args);
+          case 'update_project_tracking':
+            return await this.updateProjectTracking(args);
           default:
             throw new Error(`Herramienta desconocida: ${name}`);
         }
@@ -132,22 +344,49 @@ class GoGeneratorMCP {
 
   // Detectar la raíz del proyecto saas-mt
   detectProjectRoot() {
+    logToFile(`[DEBUG] NEW detectProjectRoot function called`);
+    
+    // Obtener la ubicación del script actual
+    const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+    logToFile(`[DEBUG] Script directory: ${scriptDir}`);
+    
+    // Desde mcp/mcp-go-generator-node/src/ necesitamos subir 3 niveles para llegar a saas-mt/
+    const projectRoot = path.resolve(scriptDir, '../../../');
+    logToFile(`[DEBUG] Calculated project root: ${projectRoot}`);
+    
+    // Verificar que existe y tiene la estructura esperada
+    const hasServices = fs.existsSync(path.join(projectRoot, 'services'));
+    const hasDockerCompose = fs.existsSync(path.join(projectRoot, 'docker-compose.yml'));
+    const hasGoMod = fs.existsSync(path.join(projectRoot, 'go.mod'));
+    
+    logToFile(`[DEBUG] Project root exists: ${fs.existsSync(projectRoot)}`);
+    logToFile(`[DEBUG] Has services: ${hasServices}`);
+    logToFile(`[DEBUG] Has docker-compose: ${hasDockerCompose}`);
+    logToFile(`[DEBUG] Has go.mod: ${hasGoMod}`);
+    
+    if (fs.existsSync(projectRoot) && hasServices && (hasDockerCompose || hasGoMod)) {
+      logToFile(`[DEBUG] Project root confirmed: ${projectRoot}`);
+      return projectRoot;
+    }
+    
+    // Fallback: buscar hacia arriba desde el directorio de trabajo actual
     let currentDir = process.cwd();
+    logToFile(`[DEBUG] Fallback search from: ${currentDir}`);
     
-    // Si estamos en saas-mt, usar directamente
-    if (path.basename(currentDir) === 'saas-mt' && fs.existsSync(path.join(currentDir, 'services'))) {
-      return currentDir;
-    }
-    
-    // Buscar hacia arriba
-    let parentDir = currentDir;
-    while (parentDir !== path.dirname(parentDir)) {
-      parentDir = path.dirname(parentDir);
-      if (path.basename(parentDir) === 'saas-mt' && fs.existsSync(path.join(parentDir, 'services'))) {
-        return parentDir;
+    while (currentDir !== path.dirname(currentDir)) {
+      const currentHasServices = fs.existsSync(path.join(currentDir, 'services'));
+      const currentHasDockerCompose = fs.existsSync(path.join(currentDir, 'docker-compose.yml'));
+      
+      logToFile(`[DEBUG] Checking ${currentDir}: services=${currentHasServices}, docker=${currentHasDockerCompose}`);
+      
+      if (currentHasServices && currentHasDockerCompose) {
+        logToFile(`[DEBUG] Found project root via fallback: ${currentDir}`);
+        return currentDir;
       }
+      currentDir = path.dirname(currentDir);
     }
     
+    logToFile(`[DEBUG] All detection methods failed`);
     throw new Error('No se pudo detectar la raíz del proyecto saas-mt');
   }
 
@@ -717,9 +956,16 @@ func (h *${entityClass}Handler) Delete(c *gin.Context) {
   }
 
   async showProjectStatus(args) {
+    console.error('[MCP DEBUG] showProjectStatus called');
     try {
+      console.error('[MCP DEBUG] Calling detectProjectRoot...');
       const projectRoot = this.detectProjectRoot();
+      console.error('[MCP DEBUG] Project root returned:', projectRoot);
+      logToFile(`[DEBUG] Project root returned: ${projectRoot}`);
+      
       const servicesRoot = path.join(projectRoot, 'services');
+      console.error('[MCP DEBUG] Services root:', servicesRoot);
+      logToFile(`[DEBUG] Services root: ${servicesRoot}`);
       
       const services = fs.readdirSync(servicesRoot)
         .filter(item => fs.statSync(path.join(servicesRoot, item)).isDirectory())
@@ -736,6 +982,8 @@ func (h *${entityClass}Handler) Delete(c *gin.Context) {
           return `- ${service} (${type})`;
         });
 
+      console.error('[MCP DEBUG] Services found:', services.length);
+      
       return {
         content: [
           {
@@ -758,16 +1006,22 @@ ${services.join('\n')}
         ],
       };
     } catch (error) {
+      console.error('[MCP DEBUG] Error in showProjectStatus:', error);
       throw new Error(`Error obteniendo estado del proyecto: ${error.message}`);
     }
   }
 
   async run() {
+    logToFile('MCP Go Generator starting...');
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
+    logToFile('MCP Go Generator connected');
     console.error('MCP Go Generator Node.js iniciado');
   }
 }
 
 const server = new GoGeneratorMCP();
-server.run().catch(console.error); 
+server.run().catch(console.error);
+
+// Export for testing
+export { GoGeneratorMCP }; 
