@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "mcp-go-generator-node": {
+      "command": "node",
+      "args": ["/Users/hornosg/MyProjects/saas-mt/mcp/mcp-go-generator-node/src/index.js"],
+      "cwd": "/Users/hornosg/MyProjects/saas-mt",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}
