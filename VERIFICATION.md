@@ -70,8 +70,8 @@ El MCP debería detectar automáticamente:
 - `saas-mt-stock-service/` (Go)
 - `saas-mt-backoffice/` (Node.js)
 - `saas-mt-marketplace-admin/` (Node.js)
-- `saas-mt-marketplace-frontend/` (Node.js)
-- `saas-mt-chat-service/` (Go)
+- `marketplace-frontend/` (Node.js)
+- `chat-service/` (Go)
 - `saas-mt-api-gateway/` (Go)
 - `saas-mt-monitoring/` (Node.js)
 
